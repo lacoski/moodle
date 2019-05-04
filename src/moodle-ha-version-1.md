@@ -137,6 +137,10 @@ systemctl disable firewalld
 
 ### Phần 1: Cài đặt MariaDB Galera
 
+#### Mô hình kiến trúc
+
+![](/images/moodle-ha-version1/pic4.png)
+
 #### Bước 1: Cài đặt MariaDB 10.2
 
 > Thực hiện trên tất cả các node
