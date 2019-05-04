@@ -48,6 +48,7 @@ Network     eth1: network internal (10.10.11.96)
 
 Cấu hình Hostname
 ```
+hostnamectl set-hostname moodle01
 echo "10.10.10.94 moodle01" >> /etc/hosts
 echo "10.10.10.95 moodle02" >> /etc/hosts
 echo "10.10.10.96 moodle03" >> /etc/hosts
@@ -80,12 +81,14 @@ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 systemctl stop firewalld
 systemctl disable firewalld
+init 6
 ```
 
 ### Tạo moodle02
 
 Cấu hình Hostname
 ```
+hostnamectl set-hostname moodle02
 echo "10.10.10.94 moodle01" >> /etc/hosts
 echo "10.10.10.95 moodle02" >> /etc/hosts
 echo "10.10.10.96 moodle03" >> /etc/hosts
@@ -118,12 +121,14 @@ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 systemctl stop firewalld
 systemctl disable firewalld
+init 6
 ```
 
 ### Tạo moodle03
 
 Cấu hình Hostname
 ```
+hostnamectl set-hostname moodle03
 echo "10.10.10.94 moodle01" >> /etc/hosts
 echo "10.10.10.95 moodle02" >> /etc/hosts
 echo "10.10.10.96 moodle03" >> /etc/hosts
@@ -156,6 +161,7 @@ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 systemctl stop firewalld
 systemctl disable firewalld
+init 6
 ```
 
 ## Cài đặt
@@ -205,6 +211,7 @@ general_log_file                = /var/log/mariadb/mysql.log
 general_log                     = 1
 
 [client-server]
+!includedir /etc/my.cnf.d
 EOF
 
 mkdir -p /var/log/mariadb/
@@ -404,7 +411,7 @@ listen stats
     stats uri /stats
     stats realm HAProxy\ Statistics
     stats admin if TRUE
-    stats auth admin:portal123
+    stats auth admin:Cloud365a@123
 
 listen galera
     bind 10.10.10.97:3306
@@ -493,85 +500,7 @@ sudo systemctl stop haproxy
 Lưu ý:
 - Khi chưa triển khai dịch vụ Pacemaker, không thể chạy được HAproxy
 
-### Phần 3: Triển khai NFS
-
-#### Mô hình kiến trúc
-
-![](/images/moodle-ha-version1/pic3.png)
-
-Lưu ý:
-- Trong mô hình, mình sẽ sử dụng giải pháp NFS làm share storage giữa các node.
-- Mình sẽ lựa chọn moodle01 làm node NFS Server, moodle02 vầ moodle03 làm node NFS Client
-- Có thể lựa chọn 1 node khác để làm node NFS Server
-
-#### Cấu hình NFS SERVER
-
-> Thực hiện trên moodle01
-
-Cài đặt
-```
-yum install nfs-utils -y
-```
-
-Tạo thư mục chia sẻ
-```
-sudo mkdir /var/moodledata
-sudo chown -R apache:apache /var/moodledata
-sudo chmod -R 755 /var/moodledata
-```
-
-Khởi tạo dịch vụ
-```
-systemctl enable rpcbind
-systemctl enable nfs-server
-systemctl enable nfs-lock
-systemctl enable nfs-idmap
-systemctl start rpcbind
-systemctl start nfs-server
-systemctl start nfs-lock
-systemctl start nfs-idmap
-```
-
-Cấu hình chia sẻ NFS
-```
-echo '/var/moodledata  10.10.11.94(rw,sync,no_root_squash,no_all_squash) 10.10.11.95(rw,no_root_squash) 10.10.11.96(rw,no_root_squash)' > /etc/exports
-```
-
-Khởi động lại NFS
-```
-systemctl restart nfs-server
-```
-
-#### Cấu hình NFS CLIENT
-
-> Thực hiện trên moodle02 và moodle03
-
-Cài đặt
-```
-yum install nfs-utils -y
-```
-
-Tạo thư mục mount point
-```
-mkdir -p /var/moodledata
-```
-
-Mount NFS
-```
-mount -t nfs 10.10.11.94:/var/moodledata /var/moodledata
-```
-
-Kiểm tra
-```
-df -kh
-```
-
-Tự động mount khi khởi động OS
-```
-echo '10.10.11.94:/var/moodledata /var/moodledata   nfs defaults 0 0' >> /etc/fstab
-```
-
-### Phần 4: Triển khai Apache
+### Phần 3: Triển khai Apache
 
 #### Tại moodle01
 Cài đặt
@@ -638,6 +567,99 @@ Tắt dịch vụ HTTP, dịch vụ HTTP sẽ được quản lý bởi Pacemake
 ```
 sudo systemctl stop httpd.service
 sudo systemctl disable httpd.service
+```
+
+### Phần 4: Triển khai NFS
+
+#### Mô hình kiến trúc
+
+![](/images/moodle-ha-version1/pic3.png)
+
+Lưu ý:
+- Trong mô hình, mình sẽ sử dụng giải pháp NFS làm share storage giữa các node.
+- Mình sẽ lựa chọn moodle01 làm node NFS Server, moodle02 vầ moodle03 làm node NFS Client
+- Có thể lựa chọn 1 node khác để làm node NFS Server
+
+#### Cấu hình NFS SERVER
+
+> Thực hiện trên moodle01
+
+Cài đặt
+```
+yum install nfs-utils -y
+```
+
+Tạo thư mục chia sẻ
+```
+sudo mkdir -p /var/moodledata
+sudo chown -R apache:apache /var/moodledata
+sudo chmod -R 755 /var/moodledata
+```
+
+Khởi tạo dịch vụ
+```
+systemctl enable rpcbind
+systemctl enable nfs-server
+systemctl enable nfs-lock
+systemctl enable nfs-idmap
+systemctl start rpcbind
+systemctl start nfs-server
+systemctl start nfs-lock
+systemctl start nfs-idmap
+```
+
+Cấu hình chia sẻ NFS
+```
+echo '/var/moodledata  10.10.11.94(rw,sync,no_root_squash,no_all_squash) 10.10.11.95(rw,no_root_squash) 10.10.11.96(rw,no_root_squash)' > /etc/exports
+```
+
+Khởi động lại NFS
+```
+systemctl restart nfs-server
+```
+
+#### Cấu hình NFS CLIENT
+
+> Thực hiện trên moodle02 và moodle03
+
+Cài đặt
+```
+yum install nfs-utils -y
+```
+
+Tạo thư mục mount point
+```
+mkdir -p /var/moodledata
+```
+
+Mount NFS
+```
+mount -t nfs 10.10.11.94:/var/moodledata /var/moodledata
+```
+
+Kiểm tra
+```
+df -kh
+```
+
+Kết quả
+```
+[root@moodle02 ~]# df -kh
+Filesystem                   Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root       50G  1.9G   49G   4% /
+devtmpfs                     2.9G     0  2.9G   0% /dev
+tmpfs                        2.9G     0  2.9G   0% /dev/shm
+tmpfs                        2.9G  8.6M  2.9G   1% /run
+tmpfs                        2.9G     0  2.9G   0% /sys/fs/cgroup
+/dev/vda1                   1014M  219M  796M  22% /boot
+/dev/mapper/centos-home       27G   33M   27G   1% /home
+tmpfs                        581M     0  581M   0% /run/user/0
+10.10.11.94:/var/moodledata   50G  1.9G   49G   4% /var/moodledata
+```
+
+Tự động mount khi khởi động OS
+```
+echo '10.10.11.94:/var/moodledata /var/moodledata   nfs defaults 0 0' >> /etc/fstab
 ```
 
 
@@ -731,6 +753,105 @@ sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang
 --agree-license
 ```
 
+Kết quả
+```
+[root@moodle01 ~]# sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.94 --dataroot=/var/moodledata \
+> --dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
+> --fullname=MoodleNH --shortname=MNH \
+> --adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
+> --agree-license
+                                 .-..-.       
+   _____                         | || |       
+  /____/-.---_  .---.  .---.  .-.| || | .---. 
+  | |  _   _  |/  _  \/  _  \/  _  || |/  __ \
+  * | | | | | || |_| || |_| || |_| || || |___/
+    |_| |_| |_|\_____/\_____/\_____||_|\_____)
+
+Moodle 3.6.3+ (Build: 20190501) command line installation program
+-------------------------------------------------------------------------------
+== Choose a language ==
+en - English (en)
+? - Available language packs
+type value, press Enter to use default value (en)
+: 
+-------------------------------------------------------------------------------
+== Data directories permission ==
+type value, press Enter to use default value (2777)
+: 
+-------------------------------------------------------------------------------
+== Web address ==
+type value, press Enter to use default value (http://10.10.10.94)
+: 
+-------------------------------------------------------------------------------
+== Data directory ==
+type value, press Enter to use default value (/var/moodledata)
+: 
+-------------------------------------------------------------------------------
+== Choose database driver ==
+ mysqli 
+ mariadb 
+type value, press Enter to use default value (mariadb)
+: 
+-------------------------------------------------------------------------------
+== Database host ==
+type value, press Enter to use default value (10.10.10.94)
+: 
+-------------------------------------------------------------------------------
+== Database name ==
+type value, press Enter to use default value (moodle)
+: 
+-------------------------------------------------------------------------------
+== Tables prefix ==
+type value, press Enter to use default value (mdl_)
+: 
+-------------------------------------------------------------------------------
+== Database port ==
+type value, press Enter to use default value ()
+: 
+-------------------------------------------------------------------------------
+== Unix socket ==
+type value, press Enter to use default value ()
+: 
+-------------------------------------------------------------------------------
+== Database user ==
+type value, press Enter to use default value (moodleuser)
+: 
+-------------------------------------------------------------------------------
+== Database password ==
+type value, press Enter to use default value (Cloud365a@123)
+: 
+-------------------------------------------------------------------------------
+== Full site name ==
+type value, press Enter to use default value (MoodleNH)
+: 
+-------------------------------------------------------------------------------
+== Short name for site (eg single word) ==
+type value, press Enter to use default value (MNH)
+: 
+-------------------------------------------------------------------------------
+== Admin account username ==
+type value, press Enter to use default value (admin)
+: 
+-------------------------------------------------------------------------------
+== New admin user password ==
+type value
+: Cloud365a@123
+-------------------------------------------------------------------------------
+== New admin user email address ==
+type value, press Enter to use default value (thanhnb@nhanhoa.com.vn)
+: 
+-------------------------------------------------------------------------------
+== Upgrade key (leave empty to not set it) ==
+type value
+: 
+-------------------------------------------------------------------------------
+== Setting up database ==
+-->System
+
+...
+Installation completed successfully.
+```
+
 Chính sửa quyền trên file `/var/www/html/config.php`
 ```
 sudo chmod o+r /var/www/html/moodle/config.php
@@ -750,6 +871,12 @@ Khởi động lại httpd
 sudo systemctl restart httpd.service
 ```
 #### Tại moodle02
+Giải nén và phân quyền source
+```
+sudo tar -zxvf moodle-latest-36.tgz -C /var/www/html
+sudo chown -R root:root /var/www/html/moodle
+```
+
 Cấu hình virtual host
 ```
 cat <<EOF | sudo tee -a /etc/httpd/conf.d/moodle.conf
@@ -802,6 +929,11 @@ sudo systemctl restart httpd.service
 ```
 
 #### Tại moodle03
+Giải nén và phân quyền source
+```
+sudo tar -zxvf moodle-latest-36.tgz -C /var/www/html
+sudo chown -R root:root /var/www/html/moodle
+```
 
 Cấu hình virtual host
 ```
@@ -893,9 +1025,50 @@ Chứng thực cluster (Chỉ thực thiện trên cấu hình trên một node 
 pcs cluster auth moodle01 moodle02 moodle03
 ```
 
+Kết quả
+```
+[root@moodle01 ~]# pcs cluster auth moodle01 moodle02 moodle03
+Username: hacluster
+Password: Cloud365a@123
+moodle01: Authorized
+moodle02: Authorized
+moodle03: Authorized
+```
+
 Khởi tạo cấu hình ban đầu của Cluster
 ```
 pcs cluster setup --name ha_cluster moodle01 moodle02 moodle03
+```
+
+Kết quả
+```
+[root@moodle01 ~]# pcs cluster setup --name ha_cluster moodle01 moodle02 moodle03
+
+Destroying cluster on nodes: moodle01, moodle02, moodle03...
+moodle03: Stopping Cluster (pacemaker)...
+moodle01: Stopping Cluster (pacemaker)...
+moodle02: Stopping Cluster (pacemaker)...
+moodle03: Successfully destroyed cluster
+moodle02: Successfully destroyed cluster
+moodle01: Successfully destroyed cluster
+
+Sending 'pacemaker_remote authkey' to 'moodle01', 'moodle02', 'moodle03'
+moodle01: successful distribution of the file 'pacemaker_remote authkey'
+moodle03: successful distribution of the file 'pacemaker_remote authkey'
+moodle02: successful distribution of the file 'pacemaker_remote authkey'
+Sending cluster config files to the nodes...
+moodle01: Succeeded
+moodle02: Succeeded
+moodle03: Succeeded
+
+Synchronizing pcsd certificates on nodes moodle01, moodle02, moodle03...
+moodle01: Success
+moodle02: Success
+moodle03: Success
+Restarting pcsd on the nodes in order to reload the certificates...
+moodle01: Success
+moodle02: Success
+moodle03: Success
 ```
 
 Khởi động cluster
@@ -903,9 +1076,28 @@ Khởi động cluster
 pcs cluster start --all
 ```
 
+Kết quả
+```
+[root@moodle01 ~]# pcs cluster start --all
+moodle01: Starting Cluster (corosync)...
+moodle02: Starting Cluster (corosync)...
+moodle03: Starting Cluster (corosync)...
+moodle01: Starting Cluster (pacemaker)...
+moodle03: Starting Cluster (pacemaker)...
+moodle02: Starting Cluster (pacemaker)...
+```
+
 Cho phép cluster khởi động cùng OS
 ```
 pcs cluster enable --all
+```
+
+Kết quả
+```
+[root@moodle01 ~]# pcs cluster enable --all
+moodle01: Cluster Enabled
+moodle02: Cluster Enabled
+moodle03: Cluster Enabled
 ```
 
 #### Bước 4: Thiết lập Cluster
@@ -928,6 +1120,19 @@ pcs property set default-resource-stickiness="INFINITY"
 Kiểm tra thiết lập cluster
 ```
 pcs property list
+```
+
+Kết quả
+```
+[root@moodle01 ~]# pcs property list
+Cluster Properties:
+ cluster-infrastructure: corosync
+ cluster-name: ha_cluster
+ dc-version: 1.1.19-8.el7_6.4-c3c624ea3d
+ default-resource-stickiness: INFINITY
+ have-watchdog: false
+ no-quorum-policy: ignore
+ stonith-enabled: false
 ```
 
 #### Bước 5: Tạo Resource
@@ -978,3 +1183,67 @@ Khởi động lại HTTP
 ```
 sudo systemctl restart httpd.service
 ```
+
+
+## Kiểm tra
+
+### Kiểm tra HAProxy Stats Page
+
+![](/images/moodle-ha-version1/pic5.png)
+
+### Truy cập Moodle HA
+
+![](/images/moodle-ha-version1/pic6.png)
+
+### Tắt nóng 1 node
+
+Lưu ý:
+- Mô hình chưa HA được node NFS Server (moodle01) nên chỉ có thể xảy lỗi moodle02 và moodle03
+- Nếu có lỗi xảy ra tại NFS Server, hệ thống moodle sẽ xảy ra vấn đề
+
+Tắt Node moodle02
+```
+[root@moodle02 ~]# init 0
+```
+
+Kiểm tra HAProxy
+![](/images/moodle-ha-version1/pic7.png)
+
+Kiểm tra trạng thái Cluster
+```
+[root@moodle01 ~]# pcs status
+Cluster name: ha_cluster
+Stack: corosync
+Current DC: moodle03 (version 1.1.19-8.el7_6.4-c3c624ea3d) - partition with quorum
+Last updated: Wed Sep 18 02:46:28 2019
+Last change: Wed Sep 18 02:38:58 2019 by root via cibadmin on moodle01
+
+3 nodes configured
+5 resources configured
+
+Online: [ moodle01 moodle03 ]
+OFFLINE: [ moodle02 ]
+
+Full list of resources:
+
+ Virtual_IP	(ocf::heartbeat:IPaddr2):	Started moodle01
+ Loadbalancer_HaProxy	(systemd:haproxy):	Started moodle01
+ Clone Set: Web_Cluster-clone [Web_Cluster] (unique)
+     Web_Cluster:0	(systemd:httpd):	Stopped
+     Web_Cluster:1	(systemd:httpd):	Started moodle03
+     Web_Cluster:2	(systemd:httpd):	Started moodle01
+
+Failed Actions:
+* Loadbalancer_HaProxy_start_0 on moodle03 'not running' (7): call=10, status=complete, exitreason='',
+    last-rc-change='Wed Sep 18 02:38:37 2019', queued=0ms, exec=2072ms
+
+
+Daemon Status:
+  corosync: active/enabled
+  pacemaker: active/enabled
+  pcsd: active/enabled
+```
+
+- Trên HAProxy và Pacemaker đã báo moodle02 down, thử truy cập lại vào moodle, vẫn có thể truy cập bình thường
+
+![](/images/moodle-ha-version1/pic8.png)
