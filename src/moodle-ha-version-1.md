@@ -17,6 +17,31 @@ Tài liệu gồm 7 phần:
 
 ![](/images/moodle-ha-version1/pic1.png)
 
+### Cấu hình
+
+```
+HOSTNAME    moodle01
+CPU         4 core
+RAM         4 GB
+Disk        vda: os
+Network     eth0: network access (10.10.10.94)
+Network     eth1: network internal (10.10.11.94)
+
+HOSTNAME    moodle02
+CPU         4 core
+RAM         4 GB
+Disk        vda: os
+Network     eth0: network access (10.10.10.95)
+Network     eth1: network internal (10.10.11.95)
+
+HOSTNAME    moodle03
+CPU         4 core
+RAM         4 GB
+Disk        vda: os
+Network     eth0: network access (10.10.10.96)
+Network     eth1: network internal (10.10.11.96)
+```
+
 ## Chuẩn bị
 
 ### Tại moodle01
