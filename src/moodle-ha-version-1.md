@@ -1,5 +1,10 @@
 # Tài liệu hướng dẫn triển khai Moodle HA
 ---
+## Mô hình
+
+### Mô hình triển khai
+
+![](/images/moodle-ha-version1/pic1.png)
 
 ## Chuẩn bị
 
@@ -450,6 +455,10 @@ Lưu ý:
 
 ## Phần 3: Triển khai NFS
 
+### Mô hình kiến trúc
+
+![](/images/moodle-ha-version1/pic3.png)
+
 Lưu ý:
 - Trong mô hình, mình sẽ sử dụng giải pháp NFS làm share storage giữa các node.
 - Mình sẽ lựa chọn moodle01 làm node NFS Server, moodle02 vầ moodle03 làm node NFS Client
@@ -808,6 +817,10 @@ sudo systemctl restart httpd.service
 
 ## Phần 7: Triển khai Pacemaker
 
+### Mô hình kiến trúc
+
+![](/images/moodle-ha-version1/pic2.png)
+
 ### Bước 1: Cài đặt
 
 > Thực hiện trên tất cả các node
@@ -910,7 +923,7 @@ Ràng buộc Resource Virtal_IP phải chạy cùng node với resource Loadbala
 pcs constraint colocation add Virtual_IP Loadbalancer_HaProxy INFINITY
 ```
 
-## Phần 8: Triển khai Pacemaker
+### Bước 6: Chỉnh sửa lại cấu hình Moodle trên Pacemaker
 
 > Thực hiện trên tất cả các node
 
