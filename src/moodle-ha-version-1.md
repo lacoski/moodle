@@ -1247,3 +1247,11 @@ Daemon Status:
 - Trên HAProxy và Pacemaker đã báo moodle02 down, thử truy cập lại vào moodle, vẫn có thể truy cập bình thường
 
 ![](/images/moodle-ha-version1/pic8.png)
+
+## Nguồn
+
+https://blog.cloud365.vn/search/?q=haproxy
+
+https://blog.cloud365.vn/search/?q=High+Availability
+
+https://blog.cloud365.vn/search/?q=galera
