@@ -283,20 +283,20 @@ mysql -u root -e "SHOW STATUS LIKE 'wsrep%'"
 mysql -u root -p
 
 CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'%' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'%' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'%' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'%' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle01' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle01' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle01' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle01' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle02' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle02' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle02' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle02' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle03' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle03' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle03' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle03' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 EXIT;
@@ -471,22 +471,22 @@ EOF
 ### Install Moodle
 
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.94 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license
 
 
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.95 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license --skip-database
 
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.96 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license --skip-database
 
 
@@ -503,7 +503,7 @@ sudo crontab -u apache -e
 sudo systemctl restart httpd.service
 
 
-> http://10.10.10.94/ (admin/0435626533a@)
+> http://10.10.10.94/ (admin/Cloud365a@123)
 
 
 ## Pacemaker
@@ -514,7 +514,7 @@ systemctl start pcsd
 systemctl enable pcsd
 
 
-echo "0435626533a@" | passwd --stdin hacluster
+echo "Cloud365a@123" | passwd --stdin hacluster
 
 pcs cluster auth moodle01 moodle02 moodle03
 

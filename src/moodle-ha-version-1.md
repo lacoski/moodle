@@ -641,20 +641,20 @@ Tạo Database và User
 mysql -u root
 
 CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'%' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'%' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'%' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'%' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle01' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle01' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle01' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle01' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle02' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle02' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle02' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle02' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
-CREATE USER 'moodleuser'@'moodle03' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle03' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'moodle03' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'moodle03' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
 EXIT;
@@ -700,9 +700,9 @@ EOF
 Cài đặt Moodle
 ```
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.94 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license
 ```
 
@@ -751,9 +751,9 @@ EOF
 Cài đặt Moodle
 ```
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.95 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license --skip-database
 ```
 
@@ -804,9 +804,9 @@ EOF
 Cài đặt Moodle
 ```
 sudo /usr/bin/php /var/www/html/moodle/admin/cli/install.php --chmod=2777 --lang=en --wwwroot=http://10.10.10.96 --dataroot=/var/moodledata \
---dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=0435626533a@ \
+--dbtype=mariadb --dbhost=10.10.10.94 --dbname=moodle --dbuser=moodleuser --dbpass=Cloud365a@123 \
 --fullname=MoodleNH --shortname=MNH \
---adminuser=admin --adminpass=0435626533a@ --adminemail=thanhnb@nhanhoa.com.vn \
+--adminuser=admin --adminpass=Cloud365a@123 --adminemail=thanhnb@nhanhoa.com.vn \
 --agree-license --skip-database
 ```
 
@@ -852,7 +852,7 @@ systemctl enable pcsd
 > Thực hiện trên tất cả các node
 
 ```
-echo "0435626533a@" | passwd --stdin hacluster
+echo "Cloud365a@123" | passwd --stdin hacluster
 ```
 
 Lưu ý:

@@ -42,8 +42,8 @@ systemctl enable mariadb
 mysql -u root -p
 
 CREATE DATABASE moodle DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@';
-GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY '0435626533a@' WITH GRANT OPTION;
+CREATE USER 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123';
+GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost' IDENTIFIED BY 'Cloud365a@123' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT;
 
@@ -163,7 +163,7 @@ type value, press Enter to use default value (root)
 -------------------------------------------------------------------------------
 == Database password ==
 type value
-: 0435626533a@
+: Cloud365a@123
 -------------------------------------------------------------------------------
 == Full site name ==
 type value
@@ -179,7 +179,7 @@ type value, press Enter to use default value (admin)
 -------------------------------------------------------------------------------
 == New admin user password ==
 type value
-: 0435626533a@
+: Cloud365a@123
 -------------------------------------------------------------------------------
 == New admin user email address ==
 type value, press Enter to use default value ()
@@ -230,7 +230,7 @@ sudo systemctl restart httpd.service
 
 
 ## Truy cập
-> http://10.10.11.86/ (admin/0435626533a@)
+> http://10.10.11.86/ (admin/Cloud365a@123)
 
 > Done
 
