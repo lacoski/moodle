@@ -2,9 +2,119 @@
 ---
 ## Chuẩn bị
 
+### Tại moodle01
+
+Cấu hình Hostname
+```
 echo "10.10.10.94 moodle01" >> /etc/hosts
 echo "10.10.10.95 moodle02" >> /etc/hosts
 echo "10.10.10.96 moodle03" >> /etc/hosts
+```
+
+Cấu hình Network
+```
+echo "Setup IP eth0"
+nmcli c modify eth0 ipv4.addresses 10.10.10.94/24
+nmcli c modify eth0 ipv4.gateway 10.10.10.1
+nmcli c modify eth0 ipv4.dns 8.8.8.8
+nmcli c modify eth0 ipv4.method manual
+nmcli con mod eth0 connection.autoconnect yes
+
+echo "Setup IP eth1"
+nmcli c modify eth1 ipv4.addresses 10.10.11.94/24
+nmcli c modify eth1 ipv4.method manual
+nmcli con mod eth1 connection.autoconnect yes
+```
+
+Cài đặt gói
+```
+yum install epel-release -y
+yum update -y
+```
+
+Tắt SELinux, Firewalld
+```
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
+```
+
+### Tạo moodle02
+
+Cấu hình Hostname
+```
+echo "10.10.10.94 moodle01" >> /etc/hosts
+echo "10.10.10.95 moodle02" >> /etc/hosts
+echo "10.10.10.96 moodle03" >> /etc/hosts
+```
+
+Cấu hình Network
+```
+echo "Setup IP eth0"
+nmcli c modify eth0 ipv4.addresses 10.10.10.95/24
+nmcli c modify eth0 ipv4.gateway 10.10.10.1
+nmcli c modify eth0 ipv4.dns 8.8.8.8
+nmcli c modify eth0 ipv4.method manual
+nmcli con mod eth0 connection.autoconnect yes
+
+echo "Setup IP eth1"
+nmcli c modify eth1 ipv4.addresses 10.10.11.95/24
+nmcli c modify eth1 ipv4.method manual
+nmcli con mod eth1 connection.autoconnect yes
+```
+
+Cài đặt gói
+```
+yum install epel-release -y
+yum update -y
+```
+
+Tắt SELinux, Firewalld
+```
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
+```
+
+### Tạo moodle03
+
+Cấu hình Hostname
+```
+echo "10.10.10.94 moodle01" >> /etc/hosts
+echo "10.10.10.95 moodle02" >> /etc/hosts
+echo "10.10.10.96 moodle03" >> /etc/hosts
+```
+
+Cấu hình Network
+```
+echo "Setup IP eth0"
+nmcli c modify eth0 ipv4.addresses 10.10.10.96/24
+nmcli c modify eth0 ipv4.gateway 10.10.10.1
+nmcli c modify eth0 ipv4.dns 8.8.8.8
+nmcli c modify eth0 ipv4.method manual
+nmcli con mod eth0 connection.autoconnect yes
+
+echo "Setup IP eth1"
+nmcli c modify eth1 ipv4.addresses 10.10.11.96/24
+nmcli c modify eth1 ipv4.method manual
+nmcli con mod eth1 connection.autoconnect yes
+```
+
+Cài đặt gói
+```
+yum install epel-release -y
+yum update -y
+```
+
+Tắt SELinux, Firewalld
+```
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
+```
 
 ## Cài đặt
 
