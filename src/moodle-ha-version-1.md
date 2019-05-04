@@ -1,5 +1,16 @@
 # Tài liệu hướng dẫn triển khai Moodle HA
 ---
+## Mục lục
+
+Tài liệu gồm 7 phần:
+- Phần 1: Cài đặt MariaDB Galera
+- Phần 2: Triển khai HAProxy
+- Phần 3: Triển khai NFS
+- Phần 4: Triển khai Apache
+- Phần 5: Cài đặt PHP
+- Phần 6: Triển khai Moodle
+- Phần 7: Triển khai Pacemaker
+
 ## Mô hình
 
 ### Mô hình triển khai
@@ -314,7 +325,7 @@ Kiểm tra các thành viên thuộc cluster
 +--------------------------+----------------------------------------------------+
 ```
 
-## Phần 2: Triển khai HAProxy
+### Phần 2: Triển khai HAProxy
 
 #### Bước 1: Cài đặt HAProxy 1.8
 ```
@@ -453,9 +464,9 @@ sudo systemctl stop haproxy
 Lưu ý:
 - Khi chưa triển khai dịch vụ Pacemaker, không thể chạy được HAproxy
 
-## Phần 3: Triển khai NFS
+### Phần 3: Triển khai NFS
 
-### Mô hình kiến trúc
+#### Mô hình kiến trúc
 
 ![](/images/moodle-ha-version1/pic3.png)
 
@@ -464,7 +475,7 @@ Lưu ý:
 - Mình sẽ lựa chọn moodle01 làm node NFS Server, moodle02 vầ moodle03 làm node NFS Client
 - Có thể lựa chọn 1 node khác để làm node NFS Server
 
-### Cấu hình NFS SERVER
+#### Cấu hình NFS SERVER
 
 > Thực hiện trên moodle01
 
@@ -502,7 +513,7 @@ Khởi động lại NFS
 systemctl restart nfs-server
 ```
 
-### Cấu hình NFS CLIENT
+#### Cấu hình NFS CLIENT
 
 > Thực hiện trên moodle02 và moodle03
 
@@ -531,9 +542,9 @@ Tự động mount khi khởi động OS
 echo '10.10.11.94:/var/moodledata /var/moodledata   nfs defaults 0 0' >> /etc/fstab
 ```
 
-## Phần 4: Triển khai Apache
+### Phần 4: Triển khai Apache
 
-### Tại moodle01
+#### Tại moodle01
 Cài đặt
 ```
 sudo yum install httpd -y
@@ -555,7 +566,7 @@ sudo systemctl stop httpd.service
 sudo systemctl disable httpd.service
 ```
 
-### Tại moodle02
+#### Tại moodle02
 
 Cài đặt
 ```
@@ -578,7 +589,7 @@ sudo systemctl stop httpd.service
 sudo systemctl disable httpd.service
 ```
 
-### Tại moodle03
+#### Tại moodle03
 Cài đặt
 ```
 sudo yum install httpd -y
@@ -601,7 +612,7 @@ sudo systemctl disable httpd.service
 ```
 
 
-## Phần 5: Cài đặt PHP
+### Phần 5: Cài đặt PHP
 
 > Thực hiện trên tất cả các node
 
@@ -617,9 +628,9 @@ yum-config-manager --enable remi-php72
 yum install php php-common php-xmlrpc php-soap php-mysql php-dom php-mbstring php-gd php-ldap php-pdo php-json php-xml php-zip php-curl php-mcrypt php-pear php-intl setroubleshoot-server -y
 ```
 
-## Phần 6: Triển khai Moodle
+### Phần 6: Triển khai Moodle
 
-### Tại moodle01
+#### Tại moodle01
 
 Tạo Database và User
 ```
@@ -709,7 +720,7 @@ Khởi động lại httpd
 ```
 sudo systemctl restart httpd.service
 ```
-### Tại moodle02
+#### Tại moodle02
 Cấu hình virtual host
 ```
 cat <<EOF | sudo tee -a /etc/httpd/conf.d/moodle.conf
@@ -761,7 +772,7 @@ Khởi động lại httpd
 sudo systemctl restart httpd.service
 ```
 
-### Tại moodle03
+#### Tại moodle03
 
 Cấu hình virtual host
 ```
@@ -815,13 +826,13 @@ sudo systemctl restart httpd.service
 ```
 
 
-## Phần 7: Triển khai Pacemaker
+### Phần 7: Triển khai Pacemaker
 
-### Mô hình kiến trúc
+#### Mô hình kiến trúc
 
 ![](/images/moodle-ha-version1/pic2.png)
 
-### Bước 1: Cài đặt
+#### Bước 1: Cài đặt
 
 > Thực hiện trên tất cả các node
 
@@ -832,7 +843,7 @@ systemctl start pcsd
 systemctl enable pcsd
 ```
 
-### Bước 2: Thiết lập mật khẩu user hacluster
+#### Bước 2: Thiết lập mật khẩu user hacluster
 
 > Thực hiện trên tất cả các node
 
@@ -844,7 +855,7 @@ Lưu ý:
 - Mật khẩu user hacluster phải đồng bộ trên tất cả các node
 
 
-### Bước 3: Tạo Cluster
+#### Bước 3: Tạo Cluster
 
 > Cấu hình trên moodle01
 
@@ -868,7 +879,7 @@ Cho phép cluster khởi động cùng OS
 pcs cluster enable --all
 ```
 
-### Bước 4: Thiết lập Cluster
+#### Bước 4: Thiết lập Cluster
 
 Cấu hình cơ chế bảo vệ trạng thái Cluster, tùy nhiên ta tạm bỏ qua cấu hình này
 ```
@@ -890,7 +901,7 @@ Kiểm tra thiết lập cluster
 pcs property list
 ```
 
-### Bước 5: Tạo Resource
+#### Bước 5: Tạo Resource
 
 Tạo resource IP VIP Cluster
 ```
@@ -923,7 +934,7 @@ Ràng buộc Resource Virtal_IP phải chạy cùng node với resource Loadbala
 pcs constraint colocation add Virtual_IP Loadbalancer_HaProxy INFINITY
 ```
 
-### Bước 6: Chỉnh sửa lại cấu hình Moodle trên Pacemaker
+#### Bước 6: Chỉnh sửa lại cấu hình Moodle trên Pacemaker
 
 > Thực hiện trên tất cả các node
 
